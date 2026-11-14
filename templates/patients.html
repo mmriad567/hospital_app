@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Patients - Diagnostic Center{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>রোগীর তালিকা</h2>
+    <a href="/patients/new" class="btn btn-primary">+ নতুন রোগী</a>
+</div>
+
+<!-- Search box -->
+<div class="mb-3">
+    <input type="text"
+           name="q"
+           class="form-control"
+           placeholder="🔍 নাম বা ফোন দিয়ে খুঁজুন..."
+           hx-get="/patients/search"
+           hx-trigger="keyup changed delay:400ms"
+           hx-target="#patients-tbody"
+           hx-swap="innerHTML">
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>নাম</th>
+                    <th>ফোন</th>
+                    <th>লিঙ্গ</th>
+                    <th>বয়স</th>
+                    <th>ঠিকানা</th>
+                    <th class="text-end">কাজ</th>
+                </tr>
+            </thead>
+            <tbody id="patients-tbody">
+                {% include "_patient_rows.html" %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

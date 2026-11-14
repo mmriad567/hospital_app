@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Reports - Diagnostic Center{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>রিপোর্টের তালিকা</h2>
+    <a href="/reports/new" class="btn btn-primary">+ নতুন রিপোর্ট</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>রিপোর্ট #</th>
+                    <th>রোগী</th>
+                    <th>ফোন</th>
+                    <th>তারিখ</th>
+                    <th>মোট (৳)</th>
+                    <th>Status</th>
+                    <th class="text-end">কাজ</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in reports %}
+                <tr>
+                    <td>#{{ r.id }}</td>
+                    <td><strong>{{ r.patient_name }}</strong></td>
+                    <td>{{ r.phone }}</td>
+                    <td>{{ r.report_date }}</td>
+                    <td>৳{{ r.total_amount }}</td>
+                    <td>
+                        {% if r.status == 'pending' %}
+                            <span class="badge bg-warning text-dark">অপেক্ষমাণ</span>
+                        {% elif r.status == 'ready' %}
+                            <span class="badge bg-success">প্রস্তুত</span>
+                        {% else %}
+                            <span class="badge bg-secondary">প্রদান হয়েছে</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        <a href="/reports/{{ r.id }}" class="btn btn-sm btn-outline-primary me-1">দেখুন</a>
+                        {% if r.status == 'ready' or r.status == 'delivered' %}
+                        <a href="/reports/{{ r.id }}/pdf" target="_blank" class="btn btn-sm btn-outline-danger">PDF</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="7" class="text-center text-muted py-3">কোনো রিপোর্ট নেই</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

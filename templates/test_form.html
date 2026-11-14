@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - Diagnostic Center{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">{{ title }}</h4>
+            </div>
+            <div class="card-body">
+
+                {% set t = test or {} %}
+
+                <form method="POST" action="{{ action }}">
+
+                    <div class="mb-3">
+                        <label class="form-label">টেস্টের নাম <span class="text-danger">*</span></label>
+                        <input type="text" name="test_name" class="form-control"
+                               value="{{ t.test_name or '' }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">ক্যাটাগরি <span class="text-danger">*</span></label>
+                        <select name="category" class="form-select" required>
+                            <option value="">-- বেছে নিন --</option>
+                            <option value="Blood"  {% if t.category == 'Blood'  %}selected{% endif %}>Blood</option>
+                            <option value="Urine"  {% if t.category == 'Urine'  %}selected{% endif %}>Urine</option>
+                            <option value="X-ray"  {% if t.category == 'X-ray'  %}selected{% endif %}>X-ray</option>
+                            <option value="USG"    {% if t.category == 'USG'    %}selected{% endif %}>USG</option>
+                            <option value="Other"  {% if t.category == 'Other'  %}selected{% endif %}>Other</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">দাম (৳) <span class="text-danger">*</span></label>
+                        <input type="number" step="0.01" name="price" class="form-control"
+                               value="{{ t.price or '' }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">স্বাভাবিক রেঞ্জ</label>
+                        <input type="text" name="normal_range" class="form-control"
+                               value="{{ t.normal_range or '' }}"
+                               placeholder="যেমন: Hemoglobin: 12-16 g/dL">
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="/tests" class="btn btn-secondary">বাতিল</a>
+                        <button type="submit" class="btn btn-success">সেভ করুন</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

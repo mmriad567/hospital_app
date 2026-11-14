@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Tests - Diagnostic Center{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>টেস্টের তালিকা</h2>
+    <a href="/tests/new" class="btn btn-primary">+ নতুন টেস্ট</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>টেস্টের নাম</th>
+                    <th>ক্যাটাগরি</th>
+                    <th>দাম (৳)</th>
+                    <th>স্বাভাবিক রেঞ্জ</th>
+                    <th class="text-end">কাজ</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in tests %}
+                <tr>
+                    <td>{{ t.id }}</td>
+                    <td><strong>{{ t.test_name }}</strong></td>
+                    <td><span class="badge bg-info text-dark">{{ t.category }}</span></td>
+                    <td>{{ t.price }}</td>
+                    <td class="text-muted small">{{ t.normal_range or '—' }}</td>
+                    <td class="text-end">
+                        <a href="/tests/{{ t.id }}/edit" class="btn btn-sm btn-outline-primary me-1">এডিট</a>
+                        <button class="btn btn-sm btn-outline-danger"
+                                hx-delete="/tests/{{ t.id }}/delete"
+                                hx-confirm="{{ t.test_name }} ডিলিট করবেন?"
+                                hx-target="closest tr"
+                                hx-swap="outerHTML">
+                            ডিলিট
+                        </button>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="6" class="text-center text-muted py-3">কোনো টেস্ট নেই</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

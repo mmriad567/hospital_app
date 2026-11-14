@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - Diagnostic Center{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">{{ title }}</h4>
+            </div>
+            <div class="card-body">
+
+                {% set p = patient or {} %}
+
+                <form method="POST" action="{{ action }}">
+
+                    <div class="mb-3">
+                        <label class="form-label">নাম <span class="text-danger">*</span></label>
+                        <input type="text" name="name" class="form-control"
+                               value="{{ p.name or '' }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">ফোন <span class="text-danger">*</span></label>
+                        <input type="text" name="phone" class="form-control"
+                               value="{{ p.phone or '' }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">লিঙ্গ <span class="text-danger">*</span></label>
+                        <select name="gender" class="form-select" required>
+                            <option value="">-- বেছে নিন --</option>
+                            <option value="male"   {% if p.gender == 'male' %}selected{% endif %}>পুরুষ</option>
+                            <option value="female" {% if p.gender == 'female' %}selected{% endif %}>মহিলা</option>
+                            <option value="other"  {% if p.gender == 'other' %}selected{% endif %}>অন্যান্য</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">বয়স <span class="text-danger">*</span></label>
+                        <input type="number" name="age" class="form-control"
+                               value="{{ p.age or '' }}" min="0" max="150" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">ঠিকানা</label>
+                        <textarea name="address" class="form-control" rows="2">{{ p.address or '' }}</textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="/patients" class="btn btn-secondary">বাতিল</a>
+                        <button type="submit" class="btn btn-success">সেভ করুন</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

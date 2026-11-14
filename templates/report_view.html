@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}রিপোর্ট #{{ report.id }} - Diagnostic Center{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>রিপোর্ট #{{ report.id }}</h2>
+    <div>
+        <a href="/reports" class="btn btn-secondary">← ফিরে যান</a>
+        {% if report.status == 'ready' or report.status == 'delivered' %}
+        <a href="/reports/{{ report.id }}/pdf" target="_blank" class="btn btn-danger">📄 PDF দেখুন</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card shadow-sm mb-3">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <p class="mb-1"><strong>রোগী:</strong> {{ report.patient_name }}</p>
+                <p class="mb-1"><strong>বয়স:</strong> {{ report.age }} বছর ({{ report.gender }})</p>
+            </div>
+            <div class="col-md-6">
+                <p class="mb-1"><strong>ফোন:</strong> {{ report.phone }}</p>
+                <p class="mb-1"><strong>তারিখ:</strong> {{ report.report_date }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form method="POST" action="/reports/{{ report.id }}">
+    <div class="card shadow-sm">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">টেস্ট রেজাল্ট</h5>
+        </div>
+        <div class="card-body p-0">
+            <table class="table mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>টেস্ট</th>
+                        <th>স্বাভাবিক রেঞ্জ</th>
+                        <th style="width: 30%;">রেজাল্ট</th>
+                        <th>দাম</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td><strong>{{ item.test_name }}</strong><br>
+                            <small class="text-muted">{{ item.category }}</small>
+                        </td>
+                        <td class="text-muted small">{{ item.normal_range or '—' }}</td>
+                        <td>
+                            <input type="text" name="result_{{ item.id }}"
+                                   value="{{ item.result_value or '' }}"
+                                   class="form-control form-control-sm"
+                                   placeholder="রেজাল্ট লিখুন">
+                        </td>
+                        <td>৳{{ item.price }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr class="table-light">
+                        <th colspan="3" class="text-end">মোট:</th>
+                        <th>৳{{ report.total_amount }}</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <div class="card-footer text-end">
+            <button type="submit" class="btn btn-success">রেজাল্ট সেভ করুন</button>
+        </div>
+    </div>
+</form>
+{% endblock %}

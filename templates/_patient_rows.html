@@ -1,0 +1,26 @@
+{% for p in patients %}
+<tr>
+    <td>{{ p.id }}</td>
+    <td>{{ p.name }}</td>
+    <td>{{ p.phone }}</td>
+    <td>{{ p.gender }}</td>
+    <td>{{ p.age }}</td>
+    <td>{{ p.address }}</td>
+    <td class="text-end">
+        <a href="/patients/{{ p.id }}/edit" class="btn btn-sm btn-outline-primary me-1">এডিট</a>
+        <button class="btn btn-sm btn-outline-danger"
+                hx-delete="/patients/{{ p.id }}/delete"
+                hx-confirm="{{ p.name }}-কে ডিলিট করবেন?"
+                hx-target="closest tr"
+                hx-swap="outerHTML">
+            ডিলিট
+        </button>
+    </td>
+</tr>
+{% else %}
+<tr>
+    <td colspan="7" class="text-center text-muted py-3">
+        কোনো রোগী পাওয়া যায়নি
+    </td>
+</tr>
+{% endfor %}
