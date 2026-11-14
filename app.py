@@ -20,7 +20,40 @@ def get_db():
 
 @app.route("/")
 def home():
-    return render_template("home.html")
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("SELECT COUNT(*) AS c FROM patients")
+    patient_count = cursor.fetchone()["c"]
+
+    cursor.execute("SELECT COUNT(*) AS c FROM tests")
+    test_count = cursor.fetchone()["c"]
+
+    cursor.execute("SELECT COUNT(*) AS c FROM reports")
+    report_count = cursor.fetchone()["c"]
+
+    cursor.execute("SELECT COUNT(*) AS c FROM reports WHERE status='pending'")
+    pending_count = cursor.fetchone()["c"]
+
+    cursor.execute("""
+        SELECT r.id, r.report_date, r.status, p.name AS patient_name
+        FROM reports r
+        JOIN patients p ON r.patient_id = p.id
+        ORDER BY r.id DESC LIMIT 5
+    """)
+    recent_reports = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return render_template(
+        "home.html",
+        patient_count=patient_count,
+        test_count=test_count,
+        report_count=report_count,
+        pending_count=pending_count,
+        recent_reports=recent_reports,
+    )
 
 @app.route("/patients")
 def patients():
@@ -338,24 +371,26 @@ def view_report(report_id):
             if key.startswith("result_"):
                 item_id = key.replace("result_", "")
                 cursor.execute(
-                    "UPDATE report_items SET result_value=%s WHERE id=%s",
-                    (value.strip(), item_id)
+                    "UPDATE report_items SET result_value=%s WHERE id=%s AND report_id=%s",
+                    (value.strip(), item_id, report_id)
                 )
 
         # সব রেজাল্ট হয়ে গেলে status = ready
         cursor.execute("""
-            SELECT COUNT(*) as total,
-                   SUM(CASE WHEN result_value IS NOT NULL AND result_value != '' THEN 1 ELSE 0 END) as filled
+            SELECT COUNT(*) AS total,
+                   SUM(CASE WHEN result_value IS NOT NULL AND result_value != '' THEN 1 ELSE 0 END) AS filled
             FROM report_items WHERE report_id=%s
         """, (report_id,))
         stats = cursor.fetchone()
-        if stats["total"] and stats["filled"] and stats["total"] == stats["filled"]:
-            cursor.execute("UPDATE reports SET status='ready' WHERE id=%s", (report_id,))
+        total = stats["total"] or 0
+        filled = int(stats["filled"] or 0)
+        if total > 0 and filled == total:
+            cursor.execute("UPDATE reports SET status='ready' WHERE id=%s AND status='pending'", (report_id,))
 
         conn.commit()
         cursor.close()
         conn.close()
-        return redirect(f"/reports/{report_id}")
+        return redirect(f"/reports/{report_id}?saved=1")
 
     cursor.execute("""
         SELECT r.*, p.name as patient_name, p.phone, p.age, p.gender, p.address
@@ -379,7 +414,8 @@ def view_report(report_id):
     items = cursor.fetchall()
     cursor.close()
     conn.close()
-    return render_template("report_view.html", report=report, items=items)
+    saved = request.args.get("saved") == "1"
+    return render_template("report_view.html", report=report, items=items, saved=saved)
 
 
 @app.route("/reports/<int:report_id>/pdf")

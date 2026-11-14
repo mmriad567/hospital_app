@@ -3,10 +3,98 @@
 {% block title %}Home - Diagnostic Center{% endblock %}
 
 {% block content %}
-<div class="text-center mt-5">
-    <h1 class="display-4">স্বাগতম 🏥</h1>
-    <p class="lead text-muted">Diagnostic Center Management System</p>
-    <hr class="my-4">
-    <p>এটা আমাদের প্রথম সুন্দর page।</p>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h1 class="page-title h2 mb-1">স্বাগতম 👋</h1>
+    <p class="text-muted mb-0">Diagnostic Center Management Dashboard</p>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="card stat-card">
+      <div class="stat-icon">🧑‍🤝‍🧑</div>
+      <div>
+        <div class="stat-value">{{ patient_count }}</div>
+        <div class="stat-label">মোট রোগী</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card stat-card">
+      <div class="stat-icon good">🧪</div>
+      <div>
+        <div class="stat-value">{{ test_count }}</div>
+        <div class="stat-label">টেস্ট</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card stat-card">
+      <div class="stat-icon neutral">📋</div>
+      <div>
+        <div class="stat-value">{{ report_count }}</div>
+        <div class="stat-label">মোট রিপোর্ট</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card stat-card">
+      <div class="stat-icon warn">⏳</div>
+      <div>
+        <div class="stat-value">{{ pending_count }}</div>
+        <div class="stat-label">অপেক্ষমাণ</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="d-flex gap-2 mb-4 flex-wrap">
+  <a href="/patients/new" class="btn btn-primary">+ নতুন রোগী</a>
+  <a href="/tests/new" class="btn btn-outline-primary">+ নতুন টেস্ট</a>
+  <a href="/reports/new" class="btn btn-outline-primary">+ নতুন রিপোর্ট</a>
+</div>
+
+<div class="card">
+  <div class="card-header bg-white d-flex justify-content-between align-items-center">
+    <strong>সাম্প্রতিক রিপোর্ট</strong>
+    <a href="/reports" class="small text-decoration-none">সব দেখুন →</a>
+  </div>
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th>রিপোর্ট #</th>
+          <th>রোগী</th>
+          <th>তারিখ</th>
+          <th>Status</th>
+          <th class="text-end">কাজ</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in recent_reports %}
+        <tr>
+          <td>#{{ r.id }}</td>
+          <td>{{ r.patient_name }}</td>
+          <td>{{ r.report_date }}</td>
+          <td>
+            {% if r.status == 'pending' %}<span class="badge bg-warning text-dark">অপেক্ষমাণ</span>
+            {% elif r.status == 'ready' %}<span class="badge bg-success">প্রস্তুত</span>
+            {% else %}<span class="badge bg-secondary">প্রদান হয়েছে</span>{% endif %}
+          </td>
+          <td class="text-end"><a href="/reports/{{ r.id }}" class="btn btn-sm btn-outline-primary">দেখুন</a></td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="5" class="text-center text-muted py-4">
+            <div style="font-size: 2rem;">📭</div>
+            <div>এখনো কোনো রিপোর্ট তৈরি হয়নি</div>
+            <a href="/reports/new" class="btn btn-sm btn-primary mt-2">প্রথম রিপোর্ট তৈরি করুন</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endblock %}
